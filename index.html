@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MAISON — Men's Fashion</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&family=Bebas+Neue&display=swap');
+
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --gold: #c9a84c;
+    --gold-light: #e8c97a;
+    --black: #050505;
+    --off-white: #f0ede6;
+    --charcoal: #1a1a1a;
+  }
+
+  body {
+    background: var(--black);
+    color: var(--off-white);
+    font-family: 'Cormorant Garamond', serif;
+    height: 100vh;
+    overflow: hidden;
+    cursor: none;
+  }
+
+  #bg-canvas {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+  }
+
+  .grid-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 1;
+    background-image:
+      repeating-linear-gradient(
+        135deg,
+        transparent,
+        transparent 80px,
+        rgba(201,168,76,0.04) 80px,
+        rgba(201,168,76,0.04) 81px
+      ),
+      repeating-linear-gradient(
+        45deg,
+        transparent,
+        transparent 80px,
+        rgba(201,168,76,0.03) 80px,
+        rgba(201,168,76,0.03) 81px
+      );
+    pointer-events: none;
+  }
+
+  .threads {
+    position: fixed;
+    inset: 0;
+    z-index: 2;
+    pointer-events: none;
+  }
+
+  .thread {
+    position: absolute;
+    width: 1px;
+    background: linear-gradient(to bottom, transparent, var(--gold), transparent);
+    opacity: 0;
+    animation: threadFall linear infinite;
+  }
+
+  @keyframes threadFall {
+    0%   { transform: translateY(-100%) rotate(var(--tilt)); opacity: 0; }
+    10%  { opacity: var(--op); }
+    90%  { opacity: var(--op); }
+    100% { transform: translateY(110vh) rotate(var(--tilt)); opacity: 0; }
+  }
+
+  .particles {
+    position: fixed;
+    inset: 0;
+    z-index: 3;
+    pointer-events: none;
+  }
+
+  .particle {
+    position: absolute;
+    border-radius: 50%;
+    background: var(--gold-light);
+    animation: floatParticle ease-in-out infinite alternate;
+  }
+
+  @keyframes floatParticle {
+    0%   { transform: translate(0, 0) scale(1); opacity: 0.3; }
+    100% { transform: translate(var(--dx), var(--dy)) scale(1.5); opacity: 0.8; }
+  }
+
+  .monogram-ring {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 2;
+    pointer-events: none;
+    animation: slowSpin 60s linear infinite;
+  }
+
+  .monogram-ring svg {
+    width: 700px;
+    height: 700px;
+    opacity: 0.04;
+  }
+
+  @keyframes slowSpin {
+    from { transform: translate(-50%, -50%) rotate(0deg); }
+    to   { transform: translate(-50%, -50%) rotate(360deg); }
+  }
+
+  .scan-line {
+    position: fixed;
+    left: 0; right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent 0%, var(--gold) 30%, var(--gold-light) 50%, var(--gold) 70%, transparent 100%);
+    z-index: 4;
+    animation: scanMove 8s ease-in-out infinite;
+    box-shadow: 0 0 20px var(--gold), 0 0 60px rgba(201,168,76,0.3);
+  }
+
+  @keyframes scanMove {
+    0%   { top: -2px; opacity: 0; }
+    5%   { opacity: 1; }
+    95%  { opacity: 1; }
+    100% { top: 100vh; opacity: 0; }
+  }
+
+  .corner {
+    position: fixed;
+    width: 80px;
+    height: 80px;
+    z-index: 5;
+    pointer-events: none;
+  }
+  .corner::before, .corner::after {
+    content: '';
+    position: absolute;
+    background: var(--gold);
+    opacity: 0.6;
+  }
+  .corner::before { width: 100%; height: 1px; }
+  .corner::after  { width: 1px; height: 100%; }
+
+  .corner.tl { top: 40px; left: 40px; }
+  .corner.tr { top: 40px; right: 40px; transform: scaleX(-1); }
+  .corner.bl { bottom: 40px; left: 40px; transform: scaleY(-1); }
+  .corner.br { bottom: 40px; right: 40px; transform: scale(-1); }
+
+  .corner span {
+    position: absolute;
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--gold);
+    opacity: 0.8;
+  }
+  .corner.tl span { top: -3px; left: -3px; }
+  .corner.tr span { top: -3px; right: -3px; }
+  .corner.bl span { bottom: -3px; left: -3px; }
+  .corner.br span { bottom: -3px; right: -3px; }
+
+  .center-content {
+    position: fixed;
+    inset: 0;
+    z-index: 10;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+  }
+
+  .eyebrow {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 11px;
+    letter-spacing: 8px;
+    color: var(--gold);
+    opacity: 0.8;
+    animation: fadeIn 2s ease forwards;
+  }
+
+  .brand-name {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(5rem, 12vw, 10rem);
+    letter-spacing: 20px;
+    line-height: 1;
+    color: var(--off-white);
+    animation: fadeIn 2.5s ease forwards;
+    text-shadow: 0 0 80px rgba(201,168,76,0.15);
+  }
+
+  .tagline {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 1.1rem;
+    letter-spacing: 3px;
+    color: var(--gold-light);
+    opacity: 0.7;
+    animation: fadeIn 3s ease forwards;
+  }
+
+  .divider {
+    width: 120px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--gold), transparent);
+    margin: 8px 0;
+    animation: expandWidth 3s ease forwards;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes expandWidth {
+    from { width: 0; opacity: 0; }
+    to   { width: 120px; opacity: 1; }
+  }
+
+  .cursor {
+    position: fixed;
+    width: 8px; height: 8px;
+    background: var(--gold);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 9999;
+    transform: translate(-50%, -50%);
+    transition: transform 0.1s;
+    mix-blend-mode: difference;
+  }
+  .cursor-ring {
+    position: fixed;
+    width: 32px; height: 32px;
+    border: 1px solid var(--gold);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 9998;
+    transform: translate(-50%, -50%);
+    transition: all 0.15s ease;
+    opacity: 0.5;
+  }
+
+  .orb {
+    position: fixed;
+    border-radius: 50%;
+    filter: blur(120px);
+    pointer-events: none;
+    z-index: 1;
+    animation: orbPulse ease-in-out infinite alternate;
+  }
+  .orb-1 {
+    width: 500px; height: 500px;
+    background: radial-gradient(circle, rgba(201,168,76,0.12) 0%, transparent 70%);
+    top: -100px; left: -100px;
+    animation-duration: 12s;
+  }
+  .orb-2 {
+    width: 400px; height: 400px;
+    background: radial-gradient(circle, rgba(201,168,76,0.08) 0%, transparent 70%);
+    bottom: -80px; right: -80px;
+    animation-duration: 15s;
+    animation-delay: -7s;
+    animation-name: orbPulse2;
+  }
+  .orb-3 {
+    width: 300px; height: 300px;
+    background: radial-gradient(circle, rgba(201,168,76,0.06) 0%, transparent 70%);
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    animation-duration: 10s;
+    animation-delay: -3s;
+    animation-name: orbPulse3;
+  }
+
+  @keyframes orbPulse {
+    0%   { transform: scale(1) translate(0, 0); opacity: 0.6; }
+    100% { transform: scale(1.3) translate(30px, 20px); opacity: 1; }
+  }
+  @keyframes orbPulse2 {
+    0%   { transform: scale(1); opacity: 0.5; }
+    100% { transform: scale(1.4) translate(-20px, -30px); opacity: 0.9; }
+  }
+  @keyframes orbPulse3 {
+    0%   { transform: translate(-50%, -50%) scale(0.8); opacity: 0.4; }
+    100% { transform: translate(-50%, -50%) scale(1.2); opacity: 0.7; }
+  }
+
+  .ticker-wrap {
+    position: fixed;
+    bottom: 40px;
+    left: 0; right: 0;
+    z-index: 10;
+    overflow: hidden;
+    pointer-events: none;
+    opacity: 0.35;
+  }
+  .ticker {
+    display: flex;
+    white-space: nowrap;
+    animation: tickerScroll 30s linear infinite;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 11px;
+    letter-spacing: 5px;
+    color: var(--gold);
+  }
+  .ticker span { margin-right: 60px; }
+  @keyframes tickerScroll {
+    from { transform: translateX(0); }
+    to   { transform: translateX(-50%); }
+  }
+</style>
+</head>
+<body>
+
+<canvas id="bg-canvas"></canvas>
+
+<div class="orb orb-1"></div>
+<div class="orb orb-2"></div>
+<div class="orb orb-3"></div>
+
+<div class="grid-overlay"></div>
+<div class="threads" id="threads"></div>
+<div class="particles" id="particles"></div>
+
+<div class="monogram-ring">
+  <svg viewBox="0 0 700 700" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <circle cx="350" cy="350" r="340" stroke="#c9a84c" stroke-width="0.5" stroke-dasharray="4 8"/>
+    <circle cx="350" cy="350" r="300" stroke="#c9a84c" stroke-width="0.3"/>
+    <circle cx="350" cy="350" r="260" stroke="#c9a84c" stroke-width="0.5" stroke-dasharray="2 12"/>
+    <polygon points="350,10 360,20 350,30 340,20" fill="#c9a84c" opacity="0.6"/>
+    <polygon points="690,350 700,360 690,370 680,360" fill="#c9a84c" opacity="0.6"/>
+    <polygon points="350,690 360,700 350,710 340,700" fill="#c9a84c" opacity="0.6"/>
+    <polygon points="10,350 20,360 10,370 0,360" fill="#c9a84c" opacity="0.6"/>
+    <line x1="50" y1="350" x2="650" y2="350" stroke="#c9a84c" stroke-width="0.3" opacity="0.5"/>
+    <line x1="350" y1="50" x2="350" y2="650" stroke="#c9a84c" stroke-width="0.3" opacity="0.5"/>
+    <line x1="110" y1="110" x2="590" y2="590" stroke="#c9a84c" stroke-width="0.2" opacity="0.3"/>
+    <line x1="590" y1="110" x2="110" y2="590" stroke="#c9a84c" stroke-width="0.2" opacity="0.3"/>
+    <circle cx="350" cy="350" r="8" stroke="#c9a84c" stroke-width="0.8" fill="none"/>
+    <circle cx="350" cy="350" r="2" fill="#c9a84c" opacity="0.8"/>
+  </svg>
+</div>
+
+<div class="scan-line"></div>
+
+<div class="corner tl"><span></span></div>
+<div class="corner tr"><span></span></div>
+<div class="corner bl"><span></span></div>
+<div class="corner br"><span></span></div>
+
+<div class="center-content">
+  <div class="eyebrow">COLLECTION 2026</div>
+   <div class="tagline">WELCOME TO</div>
+  <div class="divider"></div>
+  <div class="brand-name">ASH</div>
+   <div class="brand-name">FASHION</div>
+  <div class="divider"></div>
+    <div class="tagline">OUR COLLECTION IS OUR IDENTITY</div>
+</div>
+<div class="ticker-wrap">
+  <div class="ticker">
+    <span>PREMIUM MENSWEAR</span><span>✦</span>
+    <span>HANDCRAFTED ELEGANCE</span><span>✦</span>
+    <span>TAILORED PERFECTION</span><span>✦</span>
+    <span>LUXURY REDEFINED</span><span>✦</span>
+    <span>MAISON COLLECTION 2026</span><span>✦</span>
+    <span>PREMIUM MENSWEAR</span><span>✦</span>
+    <span>HANDCRAFTED ELEGANCE</span><span>✦</span>
+    <span>TAILORED PERFECTION</span><span>✦</span>
+    <span>LUXURY REDEFINED</span><span>✦</span>
+    <span>MAISON COLLECTION 2026</span><span>✦</span>
+  </div>
+</div>
+
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+
+<script src="script.js"></script>
+</body>
+</html>
